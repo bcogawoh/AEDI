@@ -1,0 +1,26 @@
+// Smart contract for a wallet
+
+pragma solidity ^0.8.0;
+
+contract Wallet {
+    address private owner;
+    
+    constructor() {
+        owner = msg.sender;
+    }
+    
+    function deposit() public payable {
+        
+    }
+    
+    function withdraw(uint256 amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        require(amount <= address(this).balance, "Insufficient balance");
+        
+        payable(msg.sender).transfer(amount);
+    }
+    
+    function getBalance() public view returns (uint256) {
+        return address(this).balance;
+    }
+}

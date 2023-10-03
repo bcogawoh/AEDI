@@ -1,0 +1,38 @@
+// Smart contract for automatic economic agent
+
+pragma solidity ^0.8.0;
+
+import "./Tokenization.sol";
+
+contract EconomicAgent {
+    struct TokenPricing {
+        uint256 tokenId;
+        uint256 price;
+    }
+    
+    mapping(uint256 => TokenPricing) private tokenPricing;
+    
+    Tokenization private tokenization;
+    
+    constructor(address tokenizationAddress) {
+        tokenization = Tokenization(tokenizationAddress);
+    }
+    
+    function setTokenPrice(uint256 tokenId, uint256 price) public {
+        require(msg.sender == tokenization.ownerOf(tokenId), "Only the owner of the token can set the price");
+        tokenPricing[tokenId].price = price;
+    }
+    
+    function getTokenPrice(uint256 tokenId) public view returns (uint256) {
+        return tokenPricing[tokenId].price;
+    }
+    
+    function purchaseToken(uint256 tokenId) public payable {
+        require(tokenization.ownerOf(tokenId) != address(0), "Token does not exist");
+        require(msg.value >= tokenPricing[tokenId].price, "Insufficient funds");
+        
+        address tokenOwner = tokenization.ownerOf(tokenId);
+        payable(tokenOwner).transfer(msg.value);
+        tokenization.transferFrom(tokenOwner, msg.sender, tokenId);
+    }
+}

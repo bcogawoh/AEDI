@@ -1,0 +1,29 @@
+// Smart contract for decentralized identity
+
+pragma solidity ^0.8.0;
+
+contract DecentralizedIdentity {
+    struct Identity {
+        address owner;
+        mapping(string => string) data;
+    }
+    
+    mapping(uint256 => Identity) private identities;
+    uint256 private nextIdentityId;
+    
+    function createIdentity() public returns (uint256) {
+        uint256 identityId = nextIdentityId;
+        identities[identityId].owner = msg.sender;
+        nextIdentityId++;
+        return identityId;
+    }
+    
+    function setAttribute(uint256 identityId, string memory key, string memory value) public {
+        require(identities[identityId].owner == msg.sender, "Only the owner can set attributes");
+        identities[identityId].data[key] = value;
+    }
+    
+    function getAttribute(uint256 identityId, string memory key) public view returns (string memory) {
+        return identities[identityId].data[key];
+    }
+}

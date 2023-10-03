@@ -1,0 +1,38 @@
+// Smart contract for tokenization of individual data
+
+pragma solidity ^0.8.0;
+
+import "./DecentralizedIdentity.sol";
+
+contract Tokenization {
+    struct Token {
+        uint256 tokenId;
+        uint256 identityId;
+        string data;
+    }
+    
+    mapping(uint256 => Token) private tokens;
+    uint256 private nextTokenId;
+    
+    DecentralizedIdentity private decentralizedIdentity;
+    
+    constructor(address decentralizedIdentityAddress) {
+        decentralizedIdentity = DecentralizedIdentity(decentralizedIdentityAddress);
+    }
+    
+    function tokenizeData(uint256 identityId, string memory data) public returns (uint256) {
+        require(decentralizedIdentity.getAttribute(identityId, "tokenizationEnabled") == "true", "Tokenization not enabled for this identity");
+        
+        uint256 tokenId = nextTokenId;
+        tokens[tokenId].tokenId = tokenId;
+        tokens[tokenId].identityId = identityId;
+        tokens[tokenId].data = data;
+        nextTokenId++;
+        
+        return tokenId;
+    }
+    
+    function getData(uint256 tokenId) public view returns (string memory) {
+        return tokens[tokenId].data;
+    }
+}

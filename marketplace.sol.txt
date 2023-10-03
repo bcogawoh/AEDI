@@ -1,0 +1,68 @@
+// Smart contract for a DApp marketplace
+
+pragma solidity ^0.8.0;
+
+contract Marketplace {
+    struct DApp {
+        address dappAddress;
+        string name;
+        string description;
+    }
+    
+    struct Credential {
+        uint256 credentialId;
+        uint256 dappId;
+        string name;
+        string issuer;
+    }
+    
+    struct DigitalIdentity {
+        uint256 identityId;
+        string name;
+        string description;
+        address owner;
+    }
+    
+    struct DAO {
+        uint256 daoId;
+        address daoAddress;
+        string name;
+        string description;
+    }
+    
+    mapping(uint256 => DApp) private dapps;
+    mapping(uint256 => Credential) private credentials;
+    mapping(uint256 => DigitalIdentity) private digitalIdentities;
+    mapping(uint256 => DAO) private daos;
+    
+    uint256 private nextDAppId;
+    uint256 private nextCredentialId;
+    uint256 private nextIdentityId;
+    uint256 private nextDAOId;
+    
+    function registerDApp(string memory name, string memory description) public returns (uint256) {
+        uint256 dappId = nextDAppId;
+        dapps[dappId].dappAddress = msg.sender;
+        dapps[dappId].name = name;
+        dapps[dappId].description = description;
+        nextDAppId++;
+        
+        return dappId;
+    }
+    
+    function createCredential(uint256 dappId, string memory name, string memory issuer) public returns (uint256) {
+        uint256 credentialId = nextCredentialId;
+        credentials[credentialId].credentialId = credentialId;
+        credentials[credentialId].dappId = dappId;
+        credentials[credentialId].name = name;
+        credentials[credentialId].issuer = issuer;
+        nextCredentialId++;
+        
+        return credentialId;
+    }
+    
+    function createDigitalIdentity(string memory name, string memory description) public returns (uint256) {
+        uint256 identityId = nextIdentityId;
+        digitalIdentities[identityId].identityId = identityId;
+        digitalIdentities[identityId].name = name;
+        digitalIdentities[identityId].description =
